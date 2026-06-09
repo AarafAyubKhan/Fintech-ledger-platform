@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: finsight-config
+  namespace: finsight
+data:
+  APP_NAME: "FinSight AI"
+  APP_ENV: "production"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  BACKEND_HOST: "0.0.0.0"
+  BACKEND_PORT: "8000"
+  POSTGRES_HOST: "finsight-postgres"
+  POSTGRES_PORT: "5432"
+  POSTGRES_DB: "finsight"
+  REDIS_HOST: "finsight-redis"
+  REDIS_PORT: "6379"
+  QDRANT_HOST: "finsight-qdrant"
+  QDRANT_PORT: "6333"
+  QDRANT_COLLECTION: "finsight_documents"
+  DEFAULT_LLM_PROVIDER: "gemini"
+  DEFAULT_EMBEDDING_PROVIDER: "gemini"
+  GEMINI_MODEL: "gemini-2.0-flash"
+  EMBEDDING_MODEL: "text-embedding-004"
+  EMBEDDING_DIMENSION: "768"
+  MAX_UPLOAD_SIZE_MB: "50"
+  CHUNK_SIZE: "1000"
+  CHUNK_OVERLAP: "200"
+  RATE_LIMIT_PER_MINUTE: "100"
+  ALLOWED_ORIGINS: "https://finsight.example.com"
+  NEXT_PUBLIC_API_URL: "https://finsight.example.com/api/v1"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4317"

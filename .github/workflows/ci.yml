@@ -1,0 +1,104 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  backend-lint-test:
+    name: Backend Lint & Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: finsight_test
+          POSTGRES_USER: finsight
+          POSTGRES_PASSWORD: test_password
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        working-directory: backend
+        run: |
+          pip install -e ".[dev]"
+
+      - name: Lint with Ruff
+        working-directory: backend
+        run: ruff check app/
+
+      - name: Type check with mypy
+        working-directory: backend
+        run: mypy app/ --ignore-missing-imports
+
+      - name: Run tests
+        working-directory: backend
+        env:
+          DATABASE_URL: postgresql+asyncpg://finsight:test_password@localhost:5432/finsight_test
+          REDIS_URL: redis://localhost:6379/0
+          JWT_SECRET_KEY: test-secret
+          APP_ENV: development
+        run: pytest tests/ -v --cov=app --cov-report=xml
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v4
+        with:
+          file: backend/coverage.xml
+          flags: backend
+
+  frontend-lint-build:
+    name: Frontend Lint & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint
+
+      - name: Build
+        working-directory: frontend
+        run: npm run build
+
+  docker-build:
+    name: Docker Build
+    runs-on: ubuntu-latest
+    needs: [backend-lint-test, frontend-lint-build]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build backend image
+        run: docker build -f infra/docker/backend.Dockerfile -t finsight/backend:${{ github.sha }} ./backend
+
+      - name: Build frontend image
+        run: docker build -f infra/docker/frontend.Dockerfile -t finsight/frontend:${{ github.sha }} ./frontend

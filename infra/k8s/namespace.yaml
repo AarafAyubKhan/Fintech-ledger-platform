@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: finsight
+  labels:
+    app.kubernetes.io/name: finsight
+    app.kubernetes.io/part-of: finsight-ai

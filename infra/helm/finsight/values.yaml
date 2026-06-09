@@ -1,0 +1,78 @@
+# FinSight AI — Helm Values
+# Override these values for different environments
+
+replicaCount:
+  backend: 3
+  frontend: 2
+
+image:
+  backend:
+    repository: finsight/backend
+    tag: latest
+    pullPolicy: IfNotPresent
+  frontend:
+    repository: finsight/frontend
+    tag: latest
+    pullPolicy: IfNotPresent
+
+service:
+  backend:
+    port: 8000
+  frontend:
+    port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  host: finsight.example.com
+  tls: true
+  certManager: true
+
+resources:
+  backend:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  frontend:
+    requests:
+      memory: "256Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+postgres:
+  enabled: true
+  storage: 20Gi
+  image: postgres:16-alpine
+
+qdrant:
+  enabled: true
+  storage: 10Gi
+  image: qdrant/qdrant:v1.9.0
+
+redis:
+  enabled: true
+  maxMemory: "256mb"
+  image: redis:7-alpine
+
+config:
+  appEnv: production
+  debug: false
+  logLevel: INFO
+  llmProvider: gemini
+  embeddingProvider: gemini
+  geminiModel: gemini-2.0-flash
+  embeddingModel: text-embedding-004
+  maxUploadSizeMb: 50
+  chunkSize: 1000
+  chunkOverlap: 200
+  rateLimitPerMinute: 100
+
+monitoring:
+  prometheus: true
+  grafana: true
+  otelCollector: true

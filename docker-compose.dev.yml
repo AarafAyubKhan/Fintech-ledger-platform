@@ -1,0 +1,26 @@
+###############################################
+# FinSight AI — Docker Compose (Dev Overrides)
+###############################################
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: infra/docker/backend.dev.Dockerfile
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    environment:
+      - DEBUG=true
+      - LOG_LEVEL=DEBUG
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../infra/docker/frontend.dev.Dockerfile
+    volumes:
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - WATCHPACK_POLLING=true
