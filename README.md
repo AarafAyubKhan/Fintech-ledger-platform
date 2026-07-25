@@ -119,6 +119,3 @@ http://localhost:8000/docs
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License**.
