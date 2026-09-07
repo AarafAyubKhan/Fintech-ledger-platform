@@ -2,7 +2,7 @@
 
 > **A production-inspired fintech backend built with FastAPI and PostgreSQL.**
 
-FinLedger is a backend project that simulates how modern fintech companies process payments securely using digital wallets, double-entry ledgers, fraud detection, and transaction reconciliation.
+FinLedger is a project that simulates how modern fintech companies process payments securely using digital wallets, double-entry ledgers, fraud detection, and transaction reconciliation.
 
 ---
 
